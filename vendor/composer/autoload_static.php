@@ -351,8 +351,8 @@ class ComposerStaticInit05beadc20d4f96a61c49c31e4604e422
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -458,8 +458,8 @@ class ComposerStaticInit05beadc20d4f96a61c49c31e4604e422
         ),
         'Fruitcake\\Cors\\' => 
         array (
-            0 => __DIR__ . '/..' . '/fruitcake/php-cors/src',
-            1 => __DIR__ . '/..' . '/fruitcake/laravel-cors/src',
+            0 => __DIR__ . '/..' . '/fruitcake/laravel-cors/src',
+            1 => __DIR__ . '/..' . '/fruitcake/php-cors/src',
         ),
         'Faker\\' => 
         array (
@@ -527,8 +527,11 @@ class ComposerStaticInit05beadc20d4f96a61c49c31e4604e422
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\Student\\StudentController' => __DIR__ . '/../..' . '/app/Http/Controllers/Student/StudentController.php',
+        'App\\Http\\Controllers\\SystemAdmin\\SystemAdminController' => __DIR__ . '/../..' . '/app/Http/Controllers/SystemAdmin/SystemAdminController.php',
         'App\\Http\\Controllers\\authentications\\ForgotPasswordBasic' => __DIR__ . '/../..' . '/app/Http/Controllers/authentications/ForgotPasswordBasic.php',
         'App\\Http\\Controllers\\authentications\\LoginBasic' => __DIR__ . '/../..' . '/app/Http/Controllers/authentications/LoginBasic.php',
+        'App\\Http\\Controllers\\authentications\\LogoutBasic' => __DIR__ . '/../..' . '/app/Http/Controllers/authentications/LogoutBasic.php',
         'App\\Http\\Controllers\\authentications\\RegisterBasic' => __DIR__ . '/../..' . '/app/Http/Controllers/authentications/RegisterBasic.php',
         'App\\Http\\Controllers\\cards\\CardBasic' => __DIR__ . '/../..' . '/app/Http/Controllers/cards/CardBasic.php',
         'App\\Http\\Controllers\\dashboard\\Analytics' => __DIR__ . '/../..' . '/app/Http/Controllers/dashboard/Analytics.php',
@@ -574,6 +577,7 @@ class ComposerStaticInit05beadc20d4f96a61c49c31e4604e422
         'App\\Http\\Controllers\\user_interface\\Typography' => __DIR__ . '/../..' . '/app/Http/Controllers/user_interface/Typography.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
+        'App\\Http\\Middleware\\CheckUserType' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckUserType.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\LocaleMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/LocaleMiddleware.php',
         'App\\Http\\Middleware\\PreventRequestsDuringMaintenance' => __DIR__ . '/../..' . '/app/Http/Middleware/PreventRequestsDuringMaintenance.php',
@@ -588,6 +592,7 @@ class ComposerStaticInit05beadc20d4f96a61c49c31e4604e422
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\MenuServiceProvider' => __DIR__ . '/../..' . '/app/Providers/MenuServiceProvider.php',
+        'App\\Providers\\NavbarComposerServiceProvider' => __DIR__ . '/../..' . '/app/Providers/NavbarComposerServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
         'Asm89\\Stack\\Cors' => __DIR__ . '/..' . '/asm89/stack-cors/src/Cors.php',
         'Asm89\\Stack\\CorsService' => __DIR__ . '/..' . '/asm89/stack-cors/src/CorsService.php',

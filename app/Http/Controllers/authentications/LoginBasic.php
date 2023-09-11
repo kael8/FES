@@ -14,9 +14,24 @@ use Exception;
 class LoginBasic extends Controller
 {
   public function index()
-  {
+{
+    if (auth()->check() && auth()->user()->userType) {
+        return redirect('/'); // Redirect to the home page if userType has a value
+    }
+
     return view('content.authentications.auth-login-basic');
+}
+
+  public function default()
+  {
+    if (auth()->check() && auth()->user()->userType === "System Admin") {
+      return redirect('/system-admin/dashboard');
+    }
+    else if (auth()->check() && auth()->user()->userType === "Student") {
+      return redirect('/student/dashboard');
+    }
   }
+
   public function login(Request $request)
   {
     $data = request(['student-id', 'password']);

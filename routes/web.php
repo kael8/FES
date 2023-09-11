@@ -15,14 +15,27 @@ use Illuminate\Support\Facades\Route;
 
 $controller_path = 'App\Http\Controllers';
 
-// System Admin
-Route::middleware(['auth', 'role:System Admin'])->group(function () use ($controller_path) {
-    Route::get('/dashboard', $controller_path . '\SystemAdmin\SystemAdmin@dashboard')->name('systemadmin.dashboard');
-    // Add more admin routes...
+// System Admin Routes
+
+// System Admin Routes
+Route::middleware(['userType:System Admin'])->group(function () use ($controller_path) {
+    Route::get('/system-admin/dashboard', $controller_path . '\SystemAdmin\SystemAdminController@dashboard')->name('systemadmin.dashboard');
+    // Add other system admin routes here
 });
+
+// Student Routes
+Route::middleware(['userType:Student'])->group(function () use ($controller_path) {
+    Route::get('/student/dashboard', $controller_path . '\Student\StudentController@dashboard')->name('student.dashboard');
+    // Add other student routes here
+});
+
+
 
 Route::get('/login', $controller_path . '\authentications\LoginBasic@index')->name('login');
 Route::post('/pro-login', $controller_path . '\authentications\LoginBasic@login');
+Route::get('/', $controller_path . '\authentications\LoginBasic@default')->name('default');
+// Logout route
+Route::post('/logout', $controller_path . '\authentications\LogoutBasic@logout')->name('logout');
 
 // layout
 Route::get('/layouts/without-menu', $controller_path . '\layouts\WithoutMenu@index')->name('layouts-without-menu');

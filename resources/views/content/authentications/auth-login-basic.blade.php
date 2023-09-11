@@ -25,6 +25,7 @@
           <p class="mb-4">Please sign-in to your account to continue</p>
 
           <form id="formAuthentication" class="mb-3">
+          @csrf
             <div id="error-message"></div>
             <div class="mb-3">
               <label for="email" class="form-label">Student ID</label>

@@ -303,20 +303,4 @@
       "target": "_blank"
     }
   ]
-,
-  "StudentMenu": [
-    {
-      "_comment": "Student",
-      "url": "/",
-      "name": "Dashboard",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
-      "slug": "dashboard-analytics"
-    },
-    {
-      "url": "/",
-      "name": "Evaluate Faculties",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
-      "slug": "dashboard-analytics"
-    }
-  ]
 }

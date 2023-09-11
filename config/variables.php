@@ -1,8 +1,8 @@
 <?php
   // Variables
   return [
-    "creatorName" => "ThemeSelection",
-    "creatorUrl" => "https://themeselection.com",
+    "creatorName" => "Arcayl T. Maisog",
+    "creatorUrl" => "https://www.facebook.com/Arcayl.kidd",
     "templateName" => "SLSU",
     "templateDescription" => "Most Powerful & Comprehensive Bootstrap 5 HTML Admin Dashboard Template built for developers!",
     "templateKeyword" => "dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5, bootstrap 5 free, free admin template",
