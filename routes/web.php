@@ -20,13 +20,25 @@ $controller_path = 'App\Http\Controllers';
 // System Admin Routes
 Route::middleware(['userType:System Admin'])->group(function () use ($controller_path) {
     Route::get('/system-admin/dashboard', $controller_path . '\SystemAdmin\SystemAdminController@dashboard')->name('systemadmin.dashboard');
+    Route::get('/system-admin/add', $controller_path . '\SystemAdmin\SystemAdminController@add')->name('systemadmin.add');
+    Route::get('/system-admin/assign', $controller_path . '\SystemAdmin\SystemAdminController@assign')->name('systemadmin.assign');
+    Route::get('/system-admin/pending-eval', $controller_path . '\SystemAdmin\SystemAdminController@pending')->name('systemadmin.pending-eval');
     // Add other system admin routes here
+    Route::post('/pro-submit-add', $controller_path . '\SystemAdmin\SystemAdminController@addPro');
+    Route::post('/pro-submit-assign', $controller_path . '\SystemAdmin\SystemAdminController@assignPro');
+    Route::post('/analyze-sentiment', $controller_path . '\SystemAdmin\SystemAdminController@analyzeSentiment');
 });
 
 // Student Routes
 Route::middleware(['userType:Student'])->group(function () use ($controller_path) {
     Route::get('/student/dashboard', $controller_path . '\Student\StudentController@dashboard')->name('student.dashboard');
     // Add other student routes here
+    Route::get('/student/evaluate', $controller_path . '\Student\StudentController@evaluate')->name('student.evaluate');
+    Route::post('/pro-submit-eval', $controller_path . '\Student\StudentController@evaluationPro');
+    Route::get('/fetch-departments', $controller_path . '\Student\StudentController@fetchDepartments');
+    Route::get('/fetch-programs', $controller_path . '\Student\StudentController@fetchPrograms');
+    Route::get('/fetch-faculties', $controller_path . '\Student\StudentController@fetchFaculties');
+
 });
 
 

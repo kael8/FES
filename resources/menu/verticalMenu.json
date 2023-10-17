@@ -313,8 +313,36 @@
       "slug": "dashboard-analytics"
     },
     {
-      "url": "/",
+      "url": "/student/evaluate",
       "name": "Evaluate Faculties",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard-analytics"
+    }
+  ]
+,
+  "SystemAdMenu": [
+    {
+      "_comment": "System Admin",
+      "url": "/",
+      "name": "Dashboard",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard-analytics"
+    },
+    {
+      "url": "/system-admin/add",
+      "name": "Add User",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard-analytics"
+    },
+    {
+      "url": "/system-admin/assign",
+      "name": "Assigning",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard-analytics"
+    },
+    {
+      "url": "/system-admin/pending-eval",
+      "name": "Pending",
       "icon": "menu-icon tf-icons bx bx-home-circle",
       "slug": "dashboard-analytics"
     }

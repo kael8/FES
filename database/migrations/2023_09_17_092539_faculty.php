@@ -13,15 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('Faculty', function (Blueprint $table) {
             $table->id();
-            $table->integer('studentID'); // Create the studentID column separately
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('userType');
-            $table->string('college');
+            $table->string('studentID'); // Create the studentID column separately
+            $table->string('facultyID');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -34,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        //
     }
 };

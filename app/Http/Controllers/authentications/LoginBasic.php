@@ -30,6 +30,10 @@ class LoginBasic extends Controller
     else if (auth()->check() && auth()->user()->userType === "Student") {
       return redirect('/student/dashboard');
     }
+    else
+    {
+      return redirect('/login');
+    }
   }
 
   public function login(Request $request)

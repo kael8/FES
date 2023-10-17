@@ -20,6 +20,10 @@ class User extends Authenticatable
     protected $fillable = [
         'studentID',
         'password',
+        'name',
+        'userType',
+        'email',
+        'collegeID',
     ];
 
     /**
@@ -40,4 +44,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected $primaryKey = 'id';
+
+    public function faculty()
+    {
+        return $this->belongsTo(Faculty::class, 'studentID', 'facultyID');
+    }
+
+    public function college()
+{
+    return $this->belongsTo(College::class, 'collegeID', 'id');
+}
+
+
 }
