@@ -1,0 +1,1 @@
+<img src="{{ asset('storage/photo/SLSU_Header.png') }}" alt="Your PNG Image" style="width: 300px;>

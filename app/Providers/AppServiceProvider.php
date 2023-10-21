@@ -31,7 +31,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         // Student
-        View::composer('content.student.dashboards-analytics', function ($view) {
+        View::composer('content.student.layouts.sections.navbar.navbar', function ($view) {
+            $user = Auth::user();
+            $view->with('user', $user);
+        });
+        // Faculty
+        View::composer('content.faculty.layouts.sections.navbar.navbar', function ($view) {
+            $user = Auth::user();
+            $view->with('user', $user);
+        });
+        // Academic Admin
+        View::composer('content.academic-admin.layouts.sections.navbar.navbar', function ($view) {
             $user = Auth::user();
             $view->with('user', $user);
         });
@@ -51,7 +61,7 @@ class AppServiceProvider extends ServiceProvider
             $collegeList = College::all();
             $view->with('collegeList', $collegeList);
         });
-        View::composer('content.system-admin.pending-eval', function ($view) {
+        View::composer('content.academic-admin.pending-eval', function ($view) {
             $formattedRecords = Evaluation_Records::with(['user.college'])
                 ->join('users', 'users.studentID', '=', 'evaluation_records.faculty_id')
                 ->join('college', 'users.collegeID', '=', 'college.id')
@@ -62,11 +72,12 @@ class AppServiceProvider extends ServiceProvider
                     'evaluation_records.academic_year',
                     'evaluation_records.semester',
                     DB::raw("CONCAT(evaluation_records.academic_year, ' ', evaluation_records.semester) AS academic_term"),
-                    DB::raw('(SELECT COUNT(*) FROM evaluation_records eval WHERE eval.faculty_id = evaluation_records.faculty_id) AS evaluated')
+                    DB::raw('(SELECT COUNT(*) FROM evaluation_records eval WHERE eval.academic_year = evaluation_records.academic_year AND eval.semester = evaluation_records.semester) AS evaluated')
                 )
                 ->where('users.userType', 'Faculty')
                 ->groupBy('evaluation_records.faculty_id', 'users.name', 'college.college_name', 'academic_term', 'academic_year', 'semester')
                 ->get();
+
         
             $formattedRecords = $formattedRecords->map(function ($record) {
                 return [

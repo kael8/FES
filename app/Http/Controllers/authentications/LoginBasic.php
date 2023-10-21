@@ -30,6 +30,12 @@ class LoginBasic extends Controller
     else if (auth()->check() && auth()->user()->userType === "Student") {
       return redirect('/student/dashboard');
     }
+    else if (auth()->check() && auth()->user()->userType === "Faculty") {
+      return redirect('/faculty/dashboard');
+    }
+    else if (auth()->check() && auth()->user()->userType === "Academic Admin") {
+      return redirect('/academic-admin/dashboard');
+    }
     else
     {
       return redirect('/login');

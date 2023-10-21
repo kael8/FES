@@ -1,98 +1,70 @@
 <?php
 
-namespace App\Http\Controllers\SystemAdmin;
+namespace App\Http\Controllers\AcademicAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Evaluation_Records;
-use App\Models\Faculty;
 use App\Models\Semantic_Analysis;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User; // Import the User model
-use Illuminate\Support\Facades\Hash; // Import the Hash facade
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator; // Import the Validator class
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
-class SystemAdminController extends Controller
+class AcademicAdminController extends Controller
 {
     public function dashboard()
     {
-        return view('content.system-admin.dashboards-analytics');
+        return view('content.academic-admin.dashboards-analytics');
     }
-    public function add()
-    {
-        return view('content.system-admin.add_account');
-    }
+
     public function pending()
     {
-        return view('content.system-admin.pending-eval');
+        return view('content.academic-admin.pending-eval');
     }
-    public function addPro(Request $request)
+
+    public function analyzed()
     {
-        // Validate the request data (you can customize this based on your needs)
-        $validatedData = $request->validate([
-            'studentID' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8',
-            'userType' => 'required|string|max:255',
-            'college' => 'required||max:255',
-        ]);
+        $result = DB::table('semantic_analysis AS se')
+            ->select([
+                DB::raw("CONCAT(se.semester, ', AY ', se.academic_year) AS rating_period"),
+                'users.name',
+                'users.userType',
+                'department.department_name',
+                'users.studentID',
+                'se.id'
+            ])
+            ->join('users', 'users.studentID', '=', 'se.faculty_id')
+            ->join('college', 'college.id', '=', 'users.collegeID')
+            ->join('department', 'department.college_id', '=', 'college.id')
+            ->get();
+            
 
-        // Validate the form data
-        $validator = Validator::make($request->all(), [
-            'studentID' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8',
-            'userType' => 'required|string|max:255',
-            'college' => 'required||max:255',
-        ]);
-
-        // Check if validation fails
-        if ($validator->fails()) {
-            return response()->json([
-                'status_code' => '1', // Use a different status code for validation errors
-                'message' => 'Please fill in all required fields.',
-                'errors' => $validator->errors(),
-            ]);
-        }
-
-        // Hash the password
-        $hashedPassword = Hash::make($validatedData['password']);
-
-        // Create a new user with the validated and hashed data
-        $user = User::create([
-            'studentID' => $validatedData['studentID'],
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => $hashedPassword,
-            'userType' => $validatedData['userType'],
-            'collegeID' => $validatedData['college'],
-        ]);
-        // Return a JSON response with a status code of '0'
-        return response()->json([
-            'status_code' => '0',
-            'message' => 'Evaluation submitted successfully.', // You can customize this message
-        ]);
+        return view('content.academic-admin.analyzed', compact('result'));
     }
-    public function assign()
-    {
-        return view('content.system-admin.assign');
-    }
-    public function assignPro(Request $request)
-    {
-        // Validate the request data (you can customize this based on your needs)
-        $validatedData = $request->validate([
-            'studentID' => 'required|string|max:255',
-            'facultyID' => 'required|string|max:255',
-        ]);
 
-        // Create a new user with the validated and hashed data
-        $user = Faculty::create([
-            'studentID' => $validatedData['studentID'],
-            'facultyID' => $validatedData['facultyID'],
-        ]);
+    public function summary(Request $request)
+    {
+        $evalid = $request->input('evalid');
+
+        $result = DB::table('semantic_analysis AS se')
+            ->select([
+                DB::raw("CONCAT(se.semester, ', AY ', se.academic_year) AS rating_period"),
+                'users.name',
+                'users.userType',
+                'department.department_name',
+                'se.A',
+                'se.B',
+                'se.C',
+                'se.D',
+                DB::raw('(se.A + se.B + se.C + se.D) AS total')
+            ])
+            ->join('users', 'users.studentID', '=', 'se.faculty_id')
+            ->join('college', 'college.id', '=', 'users.collegeID')
+            ->join('department', 'department.college_id', '=', 'college.id')
+            ->where('se.id', '=', $evalid)
+            ->first();
+            
+
+        return view('content.academic-admin.summary', compact('result'));
     }
 
     public function analyzeSentiment(Request $request)
@@ -181,20 +153,16 @@ class SystemAdminController extends Controller
         // Save the record to the database
         $analysis->save();
 
+        $evalid = $analysis->id;
+
         // Return the aggregated sentiment analysis results and counts
         return response()->json([
             'message' => 'Approved',
-            'status_code' => 1
+            'status_code' => 1,
+            'evalid' => $evalid
         ]);
     }
 
-
-
     
-    public function showProfile()
-    {
-        $user = Auth::user();
 
-        return view('content\system-admin\layouts\sections\navbar\navbar', compact('user'));
-    }
 }

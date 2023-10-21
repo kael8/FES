@@ -41,7 +41,21 @@ Route::middleware(['userType:Student'])->group(function () use ($controller_path
 
 });
 
+// Faculty Routes
+Route::middleware(['userType:Faculty'])->group(function () use ($controller_path) {
+    Route::get('/faculty/dashboard', $controller_path . '\Faculty\FacultyController@dashboard')->name('faculty.dashboard');
+    Route::get('/faculty/results', $controller_path . '\Faculty\FacultyController@results')->name('faculty.results');
+});
 
+// Academic Admin Routes
+Route::middleware(['userType:Academic Admin'])->group(function () use ($controller_path) {
+    Route::get('/academic-admin/dashboard', $controller_path . '\AcademicAdmin\AcademicAdminController@dashboard')->name('academicadmin.dashboard');
+    Route::get('/academic-admin/pending-eval', $controller_path . '\AcademicAdmin\AcademicAdminController@pending')->name('academicadmin.pending-eval');
+    Route::get('/academic-admin/summary-eval', $controller_path . '\AcademicAdmin\AcademicAdminController@summary')->name('academicadmin.summary-eval');
+    Route::get('/academic-admin/analyzed', $controller_path . '\AcademicAdmin\AcademicAdminController@analyzed')->name('academicadmin.analyzed');
+    Route::post('/analyze-sentiment', $controller_path . '\AcademicAdmin\AcademicAdminController@analyzeSentiment');
+    Route::post('/pro-summary', $controller_path . '\AcademicAdmin\AcademicAdminController@proSummary');
+});
 
 Route::get('/login', $controller_path . '\authentications\LoginBasic@index')->name('login');
 Route::post('/pro-login', $controller_path . '\authentications\LoginBasic@login');

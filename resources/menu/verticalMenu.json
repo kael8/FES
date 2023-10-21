@@ -339,10 +339,42 @@
       "name": "Assigning",
       "icon": "menu-icon tf-icons bx bx-home-circle",
       "slug": "dashboard-analytics"
+    }
+  ]
+,
+  "AcademicAdMenu": [
+    {
+      "_comment": "Academic Admin",
+      "url": "/",
+      "name": "Dashboard",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard-analytics"
     },
     {
-      "url": "/system-admin/pending-eval",
+      "url": "/academic-admin/pending-eval",
       "name": "Pending",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard-analytics"
+    },
+    {
+      "url": "/academic-admin/analyzed",
+      "name": "Analyzed",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard-analytics"
+    }
+  ]
+,
+  "FacultyMenu": [
+    {
+      "_comment": "Faculty",
+      "url": "/",
+      "name": "Dashboard",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard-analytics"
+    },
+    {
+      "url": "/faculty/results",
+      "name": "Results",
       "icon": "menu-icon tf-icons bx bx-home-circle",
       "slug": "dashboard-analytics"
     }

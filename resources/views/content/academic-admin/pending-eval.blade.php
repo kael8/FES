@@ -1,4 +1,4 @@
-@extends('content.system-admin.layouts.contentNavbarLayout')
+@extends('content.academic-admin.layouts.contentNavbarLayout')
 
 @section('title', 'Tables - Basic Tables')
 
