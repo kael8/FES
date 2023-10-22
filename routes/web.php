@@ -45,6 +45,7 @@ Route::middleware(['userType:Student'])->group(function () use ($controller_path
 Route::middleware(['userType:Faculty'])->group(function () use ($controller_path) {
     Route::get('/faculty/dashboard', $controller_path . '\Faculty\FacultyController@dashboard')->name('faculty.dashboard');
     Route::get('/faculty/results', $controller_path . '\Faculty\FacultyController@results')->name('faculty.results');
+    Route::post('/pro-result', $controller_path . '\Faculty\FacultyController@resultPro');
 });
 
 // Academic Admin Routes
