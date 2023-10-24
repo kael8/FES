@@ -9,9 +9,10 @@
 </h4>
 
 <!-- Responsive Table -->
-<div class="card">
+<div class="card" id = "chart" style="overflow-x: auto;">
   <h5 class="card-header">Responsive Table</h5>
-  <canvas class="card-body" id="myChart" style="width:100%;max-width:100%"></canvas>
+
+  <div id="container" style="height: 600px; overflow: auto;"></div>
   
 </div>
 <hr class="my-3">
@@ -78,8 +79,9 @@
 </div>
 <!--/ Responsive Table -->
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.Zoom.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
 
 <script src="{{ asset('storage/js/result.js') }}"></script>
 
@@ -87,75 +89,109 @@
     $xValues = [];
     $chartData = [];
     $dataIds = [];
+    $A = [];
+    $B = [];
+    $C = [];
+    $D = [];
 
     foreach($result as $item) {
         $xValues[] = $item->rating_period;
         $chartData[] = $item->total;
         $dataIds[] = $item->id;
+        $A[] = $item->A;
+        $B[] = $item->B;
+        $C[] = $item->C;
+        $D[] = $item->D;
         // You need to populate $chartData with the appropriate data here
     }
 @endphp
 
 <script>
-  const xValues = @json($xValues);
-  const chartData = @json($chartData);
-  const dataIds = @json($dataIds); // Assuming you have an array of data ids
+    const xValues = @json($xValues);
+    const chartData = @json($chartData);
+    const dataIds = @json($dataIds);
+    const A = @json($A);
+    const B = @json($B);
+    const C = @json($C);
+    const D = @json($D);
+    console.log(A);
+    // Calculate the tickInterval dynamically
+const maxCategories = 5;
+const dataLength = chartData.length;
+const tickInterval = Math.ceil(dataLength / maxCategories);
 
-  const myChart = new Chart("myChart", {
-  type: "line",
-  data: {
-    labels: xValues,
-    datasets: [{
-      data: chartData,
-      borderColor: "blue",
-      fill: false,
-      metadata: dataIds, // Bind dataIds to the metadata property
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        min: 10,
-        max: 100,
-        stepSize: 10,
-      },
-    },
-    legend: { display: false },
-    plugins: {
-      zoom: {
-        pan: {
-          enabled: true,
-          mode: 'xy',
+const data = [
+        {
+            name: "A Score",
+            data: A,
         },
-        zoom: {
-          enabled: true,
-          mode: 'xy',
-        }
-      }
-    },
-    onClick: (event, activePoints) => handleClick(event, activePoints) // No need to pass dataIds
-  }
+        {
+            name: "B Score",
+            data: B,
+        },
+        {
+            name: "C Score",
+            data: C,
+        },
+        {
+            name: "D Score",
+            data: D,
+        },
+        {
+            name: "Total Rating",
+            data: chartData,
+        },
+    ];
+
+    // Create the chart
+    const myChart = Highcharts.chart('container', {
+        chart: {
+            type: 'spline',
+            zoomType: 'xy', // Enable zooming
+            panKey: 'shift', // Enable panning by holding the Shift key
+        },
+        title: {
+            text: 'Evaluation Chart',
+        },
+        xAxis: {
+            categories: xValues,
+            tickInterval: tickInterval,
+        },
+        yAxis: {
+            title: {
+                text: 'Rating',
+            },
+        },
+        series: data,
+    });
+
+// Create a mapping of data points to dataIds
+const dataPointMap = {};
+
+chartData.forEach((value, index) => {
+    const dataId = dataIds[index];
+    if (dataId !== undefined) {
+        dataPointMap[index] = dataId;
+    }
 });
 
-
-  function handleClick(event, activePoints) {
-    if (activePoints && activePoints.length > 0) {
-      const firstPoint = activePoints[0];
-      const datasetIndex = firstPoint._datasetIndex;
-      const index = firstPoint._index;
-      if (index >= 0 && datasetIndex >= 0) {
-        const dataId = myChart.data.datasets[datasetIndex].metadata[index]; // Get the dataId from metadata
-
-        // Display the id in the console
-        result(dataId);
-
-        // You can also call a function here to do something with the id
-        // handleDataPointClick(xValues[index], chartData[datasetIndex][index], dataId);
-      }
+// Add an event listener for chart click events
+myChart.container.addEventListener("click", (event) => {
+    const pointIndex = myChart.hoverPoint.index;
+    const dataId = dataPointMap[pointIndex];
+    if (dataId !== undefined) {
+        handleClick(event, dataId);
     }
-  }
+});
+
+function handleClick(event, dataId) {
+    console.log(dataId);
+    result(dataId);
+    // You can now use dataId in your function
+    // handleDataPointClick(xValues[index], chartData[index], dataId);
+}
+
+
 </script>
-
-
 
 @endsection

@@ -9,7 +9,25 @@
 
 <!-- Basic Bootstrap Table -->
 <div class="card">
-  <h5 class="card-header">Table Basic</h5>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-7 text-start">
+        <h5 class="card-header">Pending Evaluation</h5>
+      </div>
+      <div class="col-md-5 text-end">
+        <div class="input-group" style="width: 100%; display: flex; justify-content: center; align-items: center;box-shadow: none;">
+            <form method="GET" action="{{ route('academicadmin.pending-eval') }}" class="w-100">
+                <div class="input-group mb-3" style="padding-top: 5%;box-shadow: none;">
+                    <input type="search" name="search" id="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" style="width: 150px;" />
+                    <button type="submit" class="btn btn-outline-primary">Search</button>
+                </div>
+            </form>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
   <div class="table-responsive text-nowrap">
     <table class="table">
       <thead>
@@ -22,18 +40,18 @@
         </tr>
       </thead>
       <tbody class="table-border-bottom-0">
-      @foreach($facultyList as $record)
+      @foreach($result as $record)
       <tr>
-        <td>{{ $record['name'] }}</td>
-        <td>{{ $record['college_name'] }}</td>
-        <td>{{ $record['academic_term'] }}</td>
-        <td>{{ $record['evaluated'] }}</td>
+        <td>{{ $record->name }}</td>
+        <td>{{ $record->college_name }}</td>
+        <td>{{ $record->academic_term }}</td>
+        <td>{{ $record->evaluated }}</td>
         <td>
           <button class="btn btn-sm btn-primary analyze-button" 
-                  data-faculty-id="{{ $record['faculty_id'] }}" 
-                  data-faculty-name="{{ $record['name'] }}" 
-                  data-academic-year="{{ $record['academic_year'] }}" 
-                  data-semester="{{ $record['semester'] }}">Analyze</button>
+                  data-faculty-id="{{ $record->faculty_id }}" 
+                  data-faculty-name="{{ $record->name }}" 
+                  data-academic-year="{{ $record->academic_year }}" 
+                  data-semester="{{ $record->semester }}">Analyze</button>
           <a href="#" class="btn btn-sm btn-danger">Delete</a>
         </td>
       </tr>
@@ -41,6 +59,9 @@
 
       </tbody>
     </table>
+  </div>
+  <div class="card-footer">
+  {{ $result->appends(['search' => $search])->links() }}
   </div>
 </div>
 

@@ -15,12 +15,12 @@
   <link rel="canonical" href="{{ config('variables.productPage') ? config('variables.productPage') : '' }}">
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Include Styles -->
-  @include('layouts/sections/styles')
+  @include('content/faculty/layouts/sections/styles')
 
   <!-- Include Scripts for customizer, helper, analytics, config -->
-  @include('layouts/sections/scriptsIncludes')
+  @include('content/faculty/layouts/sections/scriptsIncludes')
 </head>
 
 <body>
@@ -33,7 +33,7 @@
   {{-- remove while creating package end --}}
 
   <!-- Include Scripts -->
-  @include('layouts/sections/scripts')
+  @include('content/faculty/layouts/sections/scripts')
 
 </body>
 

@@ -1,4 +1,4 @@
-@extends('layouts/commonMaster' )
+@extends('content/faculty/layouts/commonMaster' )
 
 @section('layoutContent')
 

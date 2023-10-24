@@ -21,12 +21,17 @@ $controller_path = 'App\Http\Controllers';
 Route::middleware(['userType:System Admin'])->group(function () use ($controller_path) {
     Route::get('/system-admin/dashboard', $controller_path . '\SystemAdmin\SystemAdminController@dashboard')->name('systemadmin.dashboard');
     Route::get('/system-admin/add', $controller_path . '\SystemAdmin\SystemAdminController@add')->name('systemadmin.add');
+    Route::get('/system-admin/modifylist', $controller_path . '\SystemAdmin\SystemAdminController@modifylist')->name('systemadmin.modifylist');
+    Route::get('/system-admin/modify-account', $controller_path . '\SystemAdmin\SystemAdminController@modify_account')->name('systemadmin.modifyaccount');
     Route::get('/system-admin/assign', $controller_path . '\SystemAdmin\SystemAdminController@assign')->name('systemadmin.assign');
     Route::get('/system-admin/pending-eval', $controller_path . '\SystemAdmin\SystemAdminController@pending')->name('systemadmin.pending-eval');
     // Add other system admin routes here
     Route::post('/pro-submit-add', $controller_path . '\SystemAdmin\SystemAdminController@addPro');
+    Route::post('/pro-submit-modify', $controller_path . '\SystemAdmin\SystemAdminController@modifyPro');
+    Route::post('/remove-account', $controller_path . '\SystemAdmin\SystemAdminController@removePro');
     Route::post('/pro-submit-assign', $controller_path . '\SystemAdmin\SystemAdminController@assignPro');
     Route::post('/analyze-sentiment', $controller_path . '\SystemAdmin\SystemAdminController@analyzeSentiment');
+    Route::post('/pro-search', $controller_path . '\SystemAdmin\SystemAdminController@searchPro');
 });
 
 // Student Routes

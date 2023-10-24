@@ -17,23 +17,34 @@ class FacultyController extends Controller
     {
         $user = Auth::user();
         $studentID = $user->studentID;
+        
         $result = DB::table('semantic_analysis AS se')
-            ->select([
-                DB::raw("CONCAT(se.semester, ', AY ', se.academic_year) AS rating_period"),
-                'users.name',
-                'users.userType',
-                'department.department_name',
-                'users.studentID',
-                'se.id',
-                DB::raw('(se.A + se.B + se.C + se.D) AS total')
-            ])
-            ->join('users', 'users.studentID', '=', 'se.faculty_id')
-            ->join('college', 'college.id', '=', 'users.collegeID')
-            ->join('department', 'department.college_id', '=', 'college.id')
-            ->where('se.faculty_id', '=', $studentID)
-            ->get();
+    ->select([
+        DB::raw("CONCAT(se.semester, ', AY ', se.academic_year) AS rating_period"),
+        'users.name',
+        'users.userType',
+        'department.department_name',
+        'users.studentID',
+        'se.id',
+        DB::raw('CAST(se.A AS SIGNED) AS A'),
+        DB::raw('CAST(se.B AS SIGNED) AS B'),
+        DB::raw('CAST(se.C AS SIGNED) AS C'),
+        DB::raw('CAST(se.D AS SIGNED) AS D'),
+        DB::raw('(CAST(se.A AS SIGNED) + CAST(se.B AS SIGNED) + CAST(se.C AS SIGNED) + CAST(se.D AS SIGNED)) AS total')
+    ])
+    ->join('users', 'users.studentID', '=', 'se.faculty_id')
+    ->join('college', 'college.id', '=', 'users.collegeID')
+    ->join('department', 'department.college_id', '=', 'college.id')
+    ->where('se.faculty_id', '=', $studentID)
+    ->orderBy('se.academic_year')
+    ->orderBy('se.semester')
+    ->get();
+
+
+
         return view('content.faculty.results', compact('result'));
     }
+
     public function resultPro(Request $request)
     {
         $dataId = $request->input('dataId');

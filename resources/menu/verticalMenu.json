@@ -309,13 +309,13 @@
       "_comment": "Student",
       "url": "/",
       "name": "Dashboard",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "icon": "menu-icon fa-solid fa-desktop",
       "slug": "dashboard-analytics"
     },
     {
       "url": "/student/evaluate",
       "name": "Evaluate Faculties",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "icon": "menu-icon fa-solid fa-square-check",
       "slug": "dashboard-analytics"
     }
   ]
@@ -325,19 +325,19 @@
       "_comment": "System Admin",
       "url": "/",
       "name": "Dashboard",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "icon": "menu-icon fa-solid fa-desktop",
       "slug": "dashboard-analytics"
     },
     {
       "url": "/system-admin/add",
       "name": "Add User",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "icon": "menu-icon fa-solid fa-user-plus",
       "slug": "dashboard-analytics"
     },
     {
-      "url": "/system-admin/assign",
-      "name": "Assigning",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "url": "/system-admin/modifylist",
+      "name": "Accounts",
+      "icon": "menu-icon fa-solid fa-users-gear",
       "slug": "dashboard-analytics"
     }
   ]
@@ -347,19 +347,19 @@
       "_comment": "Academic Admin",
       "url": "/",
       "name": "Dashboard",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "icon": "menu-icon fa-solid fa-desktop",
       "slug": "dashboard-analytics"
     },
     {
       "url": "/academic-admin/pending-eval",
       "name": "Pending",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "icon": "menu-icon fa-solid fa-list-check",
       "slug": "dashboard-analytics"
     },
     {
       "url": "/academic-admin/analyzed",
-      "name": "Analyzed",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "name": "History",
+      "icon": "menu-icon fa-solid fa-chart-pie",
       "slug": "dashboard-analytics"
     }
   ]
@@ -369,13 +369,13 @@
       "_comment": "Faculty",
       "url": "/",
       "name": "Dashboard",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "icon": "menu-icon fa-solid fa-desktop",
       "slug": "dashboard-analytics"
     },
     {
       "url": "/faculty/results",
       "name": "Results",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "icon": "menu-icon fa-solid fa-square-poll-vertical",
       "slug": "dashboard-analytics"
     }
   ]

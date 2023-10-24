@@ -1,6 +1,6 @@
 function result(dataId) {
     var csrfToken = $('meta[name="csrf-token"]').attr('content');
-    var res = document.getElementById("res"); // Fix the element selection
+    var res = document.getElementById("res");
 
     $.ajax({
         type: "POST",
@@ -11,7 +11,7 @@ function result(dataId) {
             'X-CSRF-TOKEN': csrfToken
         },
         success: function (response) {
-            if (response.status_code === 0) { // Compare with integer 0
+            if (response.status_code === 0) {
                 res.style.display = "block";
                 $('#A').html(response.A);
                 $('#B').html(response.B);

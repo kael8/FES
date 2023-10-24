@@ -14,12 +14,16 @@
       <div class="card">
         <div class="card-body">
           <!-- Logo -->
-          <div class="app-brand justify-content-center" style="padding-bottom: 20px;">
-            <a href="{{url('/')}}">
-              <span class="app-brand-logo demo">@include('_partials.macros')</span>
-              <span class="app-brand-text demo text-body"></span>
-            </a>
+          <div class="justify-content-center d-flex">
+            <div class="app-brand" style="padding-bottom: 20px; width: 70px;">
+                <a href="{{url('/')}}">
+                    <span class="app-brand-logo demo">@include('_partials.macros')</span>
+                    <span class="app-brand-text demo text-body"></span>
+                </a>
+            </div>
           </div>
+
+          
           <!-- /Logo -->
           <h4 style="text-align: center;">Welcome to {{config('variables.templateName')}}</h4>
           <p class="mb-4">Please sign-in to your account to continue</p>

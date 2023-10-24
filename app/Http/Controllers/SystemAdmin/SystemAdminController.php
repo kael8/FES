@@ -8,6 +8,7 @@ use App\Models\Faculty;
 use App\Models\Semantic_Analysis;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User; // Import the User model
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash; // Import the Hash facade
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator; // Import the Validator class
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Http;
 
 class SystemAdminController extends Controller
 {
+    private $searchTable;
     public function dashboard()
     {
         return view('content.system-admin.dashboards-analytics');
@@ -27,6 +29,69 @@ class SystemAdminController extends Controller
     {
         return view('content.system-admin.pending-eval');
     }
+    public function modifylist(Request $request)
+{
+    $itemsPerPage = 5;
+    $search = $request->input('search', ''); // Get the search query parameter
+
+    $result = DB::table('users')
+        ->select([
+            'users.name',
+            'users.userType',
+            'college.college_name',
+            'department.department_name',
+            'users.studentID',
+            'users.id',
+            'users.email',
+        ])
+        ->join('college', 'college.id', '=', 'users.collegeID')
+        ->join('department', 'department.college_id', '=', 'college.id')
+        ->where(function($query) use ($search) {
+            $query->where('users.name', 'LIKE', '%' . $search . '%')
+                ->orWhere('users.studentID', 'LIKE', '%' . $search . '%')
+                ->orWhere('users.email', 'LIKE', '%' . $search . '%')
+                ->orWhere('college.college_name', 'LIKE', '%' . $search . '%')
+                ->orWhere('department.department_name', 'LIKE', '%' . $search . '%')
+                ->orWhere('users.userType', 'LIKE', '%' . $search . '%');
+        })
+        ->orderBy('users.name', 'asc') // Order by the 'name' column in ascending order
+        ->simplePaginate($itemsPerPage);
+
+    return view('content.system-admin.modify_list', compact('result', 'search'));
+}
+
+
+
+    public function showModifyList($results)
+    {
+        $result = $results;
+        return view('content.system-admin.modify_list', compact('result'));
+    }
+
+    public function modify_account(Request $request)
+    {
+        $id = $request->input('id');
+
+        $result = DB::table('users')
+            ->select([
+                'users.name',
+                'users.userType',
+                'college.college_name',
+                'department.department_name',
+                'users.studentID',
+                'users.id',
+                'users.email',
+                'users.password',
+                'collegeID'
+            ])
+            ->join('college', 'college.id', '=', 'users.collegeID')
+            ->join('department', 'department.college_id', '=', 'college.id')
+            ->where('users.studentID', $id) // Assuming $id is the user ID you want to fetch
+            ->first(); // Use first() to get a single record
+
+        return view('content.system-admin.modify_account', compact('result'));
+    }
+
     public function addPro(Request $request)
     {
         // Validate the request data (you can customize this based on your needs)
@@ -76,6 +141,58 @@ class SystemAdminController extends Controller
             'message' => 'Evaluation submitted successfully.', // You can customize this message
         ]);
     }
+    public function modifyPro(Request $request)
+    {
+        $id = $request->input('id');
+        $studentID = $request->input('studentID');
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $userType = $request->input('userType');
+        $college = $request->input('college');
+
+        // Update the user's information based on the studentID
+        $result = User::where('id', $id)->update([
+            'studentID' => $studentID,
+            'name' => $name, // Update with the new name
+            'email' => $email, // Update with the new email
+            'userType' => $userType, // Update with the new userType
+            'collegeID' => $college, // Update with the new collegeID
+        ]);
+
+        if ($result) {
+            // The update was successful
+            return response()->json([
+                'status_code' => 0,
+                'message' => 'User information updated successfully.',
+            ]);
+        } else {
+            // Handle the case where the update failed
+            return response()->json([
+                'status_code' => 1,
+                'message' => 'User not found or update failed.',
+            ]);
+        }
+    }
+
+    public function removePro(Request $request)
+    {
+        $id = $request->input('id');
+
+        // Delete the user based on the studentID
+        $result = User::where('studentID', $id)->delete();
+
+        if ($result) {
+            // The delete was successful
+            return redirect('/system-admin/modifylist');
+        } else {
+            // Handle the case where the delete failed
+            return response()->json([
+                'status_code' => 1,
+                'message' => 'User not found or delete failed.',
+            ]);
+        }
+    }
+
     public function assign()
     {
         return view('content.system-admin.assign');
@@ -95,98 +212,7 @@ class SystemAdminController extends Controller
         ]);
     }
 
-    public function analyzeSentiment(Request $request)
-    {
-        $facultyId = $request->input('facultyId');
-        $academicYear = $request->input('academicYear');
-        $semester = $request->input('semester');
-
-        // Replace 'YourModel' with the appropriate model representing your database table
-        $textsArray = Evaluation_Records::where('faculty_id', $facultyId)
-            ->where('academic_year', $academicYear)
-            ->where('semester', $semester)
-            ->select('comment', 'A', 'B', 'C', 'D')
-            ->get()
-            ->toArray();
-
-        // Initialize counters for positive and negative sentiments
-        $positiveCount = 0;
-        $negativeCount = 0;
-        $A = 0;
-        $B = 0;
-        $C = 0;
-        $D = 0;
-        $num = 0;
-
-        // Loop through each text and perform sentiment analysis
-        foreach ($textsArray as $text) {
-            $response = Http::post('http://127.0.0.1:5000/predict_sentiment', [
-                'text' => $text['comment']
-            ]);
-            
-            if ($response->ok()) {
-                $sentimentData = $response->json();
-
-                // Process the sentiment analysis results
-                $predictedSentiment = $sentimentData['predicted_sentiment'];
-                $predictionScore = $sentimentData['prediction_score'];
-
-                // Increment the respective counter based on sentiment
-                if ($predictedSentiment === 'Positive') {
-                    $positiveCount++;
-                } elseif ($predictedSentiment === 'Negative') {
-                    $negativeCount++;
-                }
-                // Accumulate the values of 'A', 'B', 'C', and 'D'
-                $A += $text['A'];
-                $B += $text['B'];
-                $C += $text['C'];
-                $D += $text['D'];
-                $num += 1;
-                // Store the sentiment analysis results for this text
-                $sentimentResults[] = [
-                    'text' => $text,
-                    'predicted_sentiment' => $predictedSentiment,
-                    'prediction_score' => $predictionScore
-                ];
-            } else {
-                return response()->json([
-                    'error' => 'Failed to retrieve sentiment analysis data from the Flask API.'
-                ], $response->status());
-            }
-        }
-        // Get the average of 'A', 'B', 'C', and 'D'
-        $A = $A/$num;
-        $B = $B/$num;
-        $C = $C/$num;
-        $D = $D/$num;
-
-        $positiveCount = number_format($positiveCount / $num * 100, 2);
-        $negativeCount = number_format($negativeCount / $num * 100, 2);
-                
-
-        // Create a new instance of the model and set the values
-        $analysis = new Semantic_Analysis;
-        $analysis->faculty_id = $facultyId;
-        $analysis->academic_year = $academicYear;
-        $analysis->semester = $semester;
-        $analysis->A = number_format($A, 2);
-        $analysis->B = number_format($B, 2);
-        $analysis->C = number_format($C, 2);
-        $analysis->D = number_format($D, 2);
-        $analysis->positive = $positiveCount;
-        $analysis->negative = $negativeCount;
-        $analysis->respondents = $num;
-
-        // Save the record to the database
-        $analysis->save();
-
-        // Return the aggregated sentiment analysis results and counts
-        return response()->json([
-            'message' => 'Approved',
-            'status_code' => 1
-        ]);
-    }
+    
 
 
 

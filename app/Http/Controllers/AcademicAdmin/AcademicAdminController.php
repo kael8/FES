@@ -16,10 +16,35 @@ class AcademicAdminController extends Controller
         return view('content.academic-admin.dashboards-analytics');
     }
 
-    public function pending()
-    {
-        return view('content.academic-admin.pending-eval');
-    }
+    public function pending(Request $request)
+{
+    $itemsPerPage = 5;
+    $search = $request->input('search', ''); // Get the search query parameter
+
+    $result = DB::table('evaluation_records AS er')
+    ->select([
+        'er.faculty_id',
+        'users.name',
+        'college.college_name',
+        'er.academic_year',
+        'er.semester',
+        DB::raw("CONCAT(er.academic_year, ' ', er.semester) AS academic_term"),
+        DB::raw("CONCAT((SELECT COUNT(*) FROM evaluation_records eval WHERE eval.academic_year = er.academic_year AND eval.semester = er.semester), '/30') AS evaluated")
+    ])
+    ->join('users', 'users.studentID', '=', 'er.faculty_id')
+    ->join('college', 'users.collegeID', '=', 'college.id')
+    ->where('users.userType', '=', 'Faculty')
+    ->where(function($query) use ($search) {
+        $query->where('users.name', 'LIKE', '%' . $search . '%')
+            
+            ->orWhere('college.college_name', 'LIKE', '%' . $search . '%');
+    })
+    ->groupBy('er.faculty_id', 'users.name', 'college.college_name', 'academic_term', 'er.academic_year', 'er.semester')
+        ->simplePaginate($itemsPerPage);
+
+    return view('content.academic-admin.pending-eval', compact('result', 'search'));
+}
+
 
     public function analyzed()
     {
@@ -92,7 +117,7 @@ class AcademicAdminController extends Controller
 
         // Loop through each text and perform sentiment analysis
         foreach ($textsArray as $text) {
-            $response = Http::post('http://127.0.0.1:5000/predict_sentiment', [
+            $response = Http::post('http://127.0.0.1:8080/predict_sentiment', [
                 'text' => $text['comment']
             ]);
             

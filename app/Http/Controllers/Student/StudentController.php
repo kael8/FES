@@ -142,7 +142,9 @@ class StudentController extends Controller
         $collegeId = $request->input('college_id');
 
         // Fetch departments based on the selected college ID
-        $faculties = User::where('collegeID', $collegeId)->get();
+        $faculties = User::where('userType', 'Faculty')
+                         ->where('collegeID', $collegeId)
+                         ->get();
 
         // Build HTML options for the department select
         $options = '<option value="">Select a faculty</option>';

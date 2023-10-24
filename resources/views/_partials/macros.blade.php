@@ -1,1 +1,1 @@
-<img src="{{ asset('storage/photo/SLSU_Seal.png') }}" alt="Your PNG Image" style="width: 70px;>
+<img src="{{ asset('storage/photo/SLSU_Seal.png') }}" alt="Your PNG Image" style="width: 100%;>
