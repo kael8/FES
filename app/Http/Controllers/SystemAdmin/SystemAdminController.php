@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SystemAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\Evaluation_Records;
 use App\Models\Faculty;
 use App\Models\Semantic_Analysis;
@@ -29,36 +30,52 @@ class SystemAdminController extends Controller
     {
         return view('content.system-admin.pending-eval');
     }
+
+    public function fetchDepartments(Request $request)
+    {
+        $collegeId = $request->input('college_id');
+        // Fetch departments based on the selected college ID
+        $departments = Department::where('college_id', $collegeId)->get();
+
+        // Build HTML options for the department select
+        $options = '<option value="">Select a department</option>';
+        foreach ($departments as $department) {
+            $options .= '<option value="' . $department->id . '">' . $department->department_name . '</option>';
+        }
+
+        return $options;
+    }
+
     public function modifylist(Request $request)
-{
-    $itemsPerPage = 5;
-    $search = $request->input('search', ''); // Get the search query parameter
+    {
+        $itemsPerPage = 5;
+        $search = $request->input('search', ''); // Get the search query parameter
 
-    $result = DB::table('users')
-        ->select([
-            'users.name',
-            'users.userType',
-            'college.college_name',
-            'department.department_name',
-            'users.studentID',
-            'users.id',
-            'users.email',
-        ])
-        ->join('college', 'college.id', '=', 'users.collegeID')
-        ->join('department', 'department.college_id', '=', 'college.id')
-        ->where(function($query) use ($search) {
-            $query->where('users.name', 'LIKE', '%' . $search . '%')
-                ->orWhere('users.studentID', 'LIKE', '%' . $search . '%')
-                ->orWhere('users.email', 'LIKE', '%' . $search . '%')
-                ->orWhere('college.college_name', 'LIKE', '%' . $search . '%')
-                ->orWhere('department.department_name', 'LIKE', '%' . $search . '%')
-                ->orWhere('users.userType', 'LIKE', '%' . $search . '%');
-        })
-        ->orderBy('users.name', 'asc') // Order by the 'name' column in ascending order
-        ->simplePaginate($itemsPerPage);
+        $result = DB::table('users')
+            ->select([
+                'users.name',
+                'users.userType',
+                'college.college_name',
+                'department.department_name',
+                'users.studentID',
+                'users.id',
+                'users.email',
+            ])
+            ->join('college', 'college.id', '=', 'users.collegeID')
+            ->join('department', 'department.college_id', '=', 'college.id')
+            ->where(function($query) use ($search) {
+                $query->where('users.name', 'LIKE', '%' . $search . '%')
+                    ->orWhere('users.studentID', 'LIKE', '%' . $search . '%')
+                    ->orWhere('users.email', 'LIKE', '%' . $search . '%')
+                    ->orWhere('college.college_name', 'LIKE', '%' . $search . '%')
+                    ->orWhere('department.department_name', 'LIKE', '%' . $search . '%')
+                    ->orWhere('users.userType', 'LIKE', '%' . $search . '%');
+            })
+            ->orderBy('users.name', 'asc')
+            ->simplePaginate($itemsPerPage);
 
-    return view('content.system-admin.modify_list', compact('result', 'search'));
-}
+        return view('content.system-admin.modify_list', compact('result', 'search'));
+    }
 
 
 
@@ -93,54 +110,62 @@ class SystemAdminController extends Controller
     }
 
     public function addPro(Request $request)
-    {
-        // Validate the request data (you can customize this based on your needs)
-        $validatedData = $request->validate([
-            'studentID' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8',
-            'userType' => 'required|string|max:255',
-            'college' => 'required||max:255',
-        ]);
+{  
+    if ($request->isDean) {
+        $department = null;
+    }
+    // Validate the request data (you can customize this based on your needs)
+    $validatedData = $request->validate([
+        'studentID' => 'required|string|max:255',
+        'name' => 'required|string|max:255',
+        'password' => 'required|string|min:8',
+        'userType' => 'required|string|max:255',
+        'college' => 'required|max:255', // Remove extra '|'
+        
+    ]);
 
-        // Validate the form data
-        $validator = Validator::make($request->all(), [
-            'studentID' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8',
-            'userType' => 'required|string|max:255',
-            'college' => 'required||max:255',
-        ]);
+    // Validate the form data (you can keep this part for additional validation)
+    $validator = Validator::make($request->all(), [
+        'studentID' => 'required|string|max:255',
+        'name' => 'required|string|max:255',
+        'password' => 'required|string|min:8',
+        'userType' => 'required|string|max:255',
+        'college' => 'required|max:255', // Remove extra '|'
+        'department' => $request->isDean !== '1' ? 'required|string|max:255' : '', // Make 'department' required only if the user is not a dean
+    ]);
+    
 
-        // Check if validation fails
-        if ($validator->fails()) {
-            return response()->json([
-                'status_code' => '1', // Use a different status code for validation errors
-                'message' => 'Please fill in all required fields.',
-                'errors' => $validator->errors(),
-            ]);
-        }
-
-        // Hash the password
-        $hashedPassword = Hash::make($validatedData['password']);
-
-        // Create a new user with the validated and hashed data
-        $user = User::create([
-            'studentID' => $validatedData['studentID'],
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => $hashedPassword,
-            'userType' => $validatedData['userType'],
-            'collegeID' => $validatedData['college'],
-        ]);
-        // Return a JSON response with a status code of '0'
+    // Check if validation fails
+    if ($validator->fails()) {
         return response()->json([
-            'status_code' => '0',
-            'message' => 'Evaluation submitted successfully.', // You can customize this message
+            'status_code' => '1', // Use a different status code for validation errors
+            'message' => 'Please fill in all required fields.',
+            'errors' => $validator->errors(),
         ]);
     }
+
+    // Hash the password
+    $hashedPassword = Hash::make($validatedData['password']);
+
+
+    // Create a new user with the validated and hashed data
+    $user = User::create([
+        'studentID' => $validatedData['studentID'],
+        'name' => $validatedData['name'],
+        'password' => $hashedPassword,
+        'userType' => $validatedData['userType'],
+        'collegeID' => $validatedData['college'],
+        'departmentID' => $request->isDean !== '1' ? $request->department : null,
+        'is_dean' => $request->isDean == '1' ? $request->isDean : '0',
+    ]);
+
+    // Return a JSON response with a status code of '0'
+    return response()->json([
+        'status_code' => '0',
+        'message' => 'User created successfully.', // You can customize this message
+    ]);
+}
+
     public function modifyPro(Request $request)
     {
         $id = $request->input('id');

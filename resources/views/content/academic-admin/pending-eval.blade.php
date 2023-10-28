@@ -44,7 +44,7 @@
       <tr>
         <td>{{ $record->name }}</td>
         <td>{{ $record->college_name }}</td>
-        <td>{{ $record->academic_term }}</td>
+        <td>{{ $record->academic_period }}</td>
         <td>{{ $record->evaluated }}</td>
         <td>
           <button class="btn btn-sm btn-primary analyze-button" 
@@ -76,7 +76,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Are you sure you want to analyze <span id="facultyName"></span> (ID: <span id="facultyId"></span>) for academic year <span id="academicYear"></span>, semester <span id="semester"></span>?
+        Are you sure you want to analyze <span id="facultyName"></span> (ID: <span id="facultyId"></span>) for academic year <span id="academicYear"></span>, <span id="semester"></span> semester?
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancel" onclick="closeModal()">Cancel</button>

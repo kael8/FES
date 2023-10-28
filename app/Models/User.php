@@ -22,8 +22,9 @@ class User extends Authenticatable
         'password',
         'name',
         'userType',
-        'email',
         'collegeID',
+        'departmentID',
+        'is_dean',
     ];
 
     /**
@@ -43,6 +44,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_dean' => 'boolean',
     ];
 
     protected $primaryKey = 'id';

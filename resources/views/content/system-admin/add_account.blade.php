@@ -32,35 +32,44 @@
         </div>
         <div class="row">
           <div class="col-md-6">
-            <label for="defaultFormControlInput" class="form-label">Email</label>
-            <input type="email" name = "email" class="form-control" placeholder="example@mail.com" aria-describedby="defaultFormControlHelp" />
+          <label for="defaultFormControlInput" class="form-label">Password</label>
+            <input type="password" name = "password"class="form-control" aria-describedby="defaultFormControlHelp" />
             <div id="defaultFormControlHelp" class="form-text">We'll never share your details with anyone else.</div>
+            
           </div>
           <div class="col-md-6">
-            <label for="exampleFormControlSelect1" class="form-label">User Type</label>
-            <select class="form-select" name = "userType" aria-label="Default select example">
-              <option selected>Open this select menu</option>
-              <option value="Student">Student</option>
-              <option value="Faculty">Faculty</option>
-              <option value="System Admin">System Admin</option>
-              <option value="Academic Admin">Academic Admin</option>
-            </select>
-          </div>
+    <label for="userType" class="form-label">User Type</label>
+    <select class="form-select" name="userType" id="userType" aria-label="Default select example">
+        <option selected>Open this select menu</option>
+        <option value="Student">Student</option>
+        <option value="Faculty">Faculty</option>
+        <option value="System Admin">System Admin</option>
+        <option value="Academic Admin">Academic Admin</option>
+    </select>
+
+    <label for="isDean" class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" name="isDean" id="isDean" value="1" disabled>
+        Dean
+    </label>
+</div>
+
         </div>
         <div class="row">
           <div class="col-md-6">
-            <label for="defaultFormControlInput" class="form-label">Password</label>
-            <input type="password" name = "password"class="form-control" aria-describedby="defaultFormControlHelp" />
-            <div id="defaultFormControlHelp" class="form-text">We'll never share your details with anyone else.</div>
-          </div>
-
-          <div class="col-md-6">
             <label for="defaultFormControlInput" class="form-label">College</label>
-            <select class="form-select" name = "college" aria-label="Default select example">
-              <option selected>Open this select menu</option>
+            <select class="form-select" name = "college" id="collegeSelect" aria-label="Default select example">
+              <option selected disabled>Open this select menu</option>
               @foreach($collegeList as $list)
                 <option value="{{ $list->id }}">{{ $list->college_name }}</option>
               @endforeach
+              
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label for="defaultFormControlInput" class="form-label">Department</label>
+            <select class="form-select" name = "department" id="departmentSelect" aria-label="Default select example" disabled>
+              <option selected>Open this select menu</option>
               
             </select>
             <div id="defaultFormControlHelp" class="form-text">We'll never share your details with anyone else.</div>
@@ -80,11 +89,48 @@
     </div>
   </div>
 </form>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
 <script src="{{ asset(mix('assets/vendor/libs/jquery/jquery.js')) }}"></script>
 <script src="{{ asset('storage/js/submit-add.js') }}"></script>
+
+<!-- Department -->
+<script src="{{ asset('storage/js/acc-fetch-departments.js') }}"></script>
   
-</div>
+<script>
+    $(document).ready(function () {
+    // Target the user type and department select elements
+    var userTypeSelect = $('#userType');
+    var isDeanCheckbox = $('#isDean');
+    var departmentSelect = $('#departmentSelect');
+
+    // Function to toggle the disabled state of the department field and the "Dean" checkbox
+    function toggleDepartmentField() {
+        var selectedUserType = userTypeSelect.val();
+        if (selectedUserType === 'Academic Admin') {
+            isDeanCheckbox.prop('disabled', false);
+        } else {
+            isDeanCheckbox.prop('disabled', true);
+            isDeanCheckbox.prop('checked', false);
+        }
+
+        if (isDeanCheckbox.is(':checked')) {
+            departmentSelect.prop('disabled', true);
+        } else {
+            departmentSelect.prop('disabled', false);
+        }
+    }
+
+    // Initial call to set the state based on the default selection
+    toggleDepartmentField();
+
+    // Add event listeners to the user type and checkbox
+    userTypeSelect.on('change', function () {
+        toggleDepartmentField();
+    });
+
+    isDeanCheckbox.on('change', function () {
+        toggleDepartmentField();
+    });
+});
+
+</script>
 @endsection

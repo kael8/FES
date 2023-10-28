@@ -32,6 +32,7 @@ Route::middleware(['userType:System Admin'])->group(function () use ($controller
     Route::post('/pro-submit-assign', $controller_path . '\SystemAdmin\SystemAdminController@assignPro');
     Route::post('/analyze-sentiment', $controller_path . '\SystemAdmin\SystemAdminController@analyzeSentiment');
     Route::post('/pro-search', $controller_path . '\SystemAdmin\SystemAdminController@searchPro');
+    Route::get('/acc-fetch-departments', $controller_path . '\SystemAdmin\SystemAdminController@fetchDepartments');
 });
 
 // Student Routes

@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Evaluation_Records;
 use App\Models\Evaluation_Responses;
 use App\Models\Faculty;
+use App\Models\Pending_Eval;
 use App\Models\Program;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator; // Import the Validator class
@@ -30,6 +31,9 @@ class StudentController extends Controller
         $user = Auth::user();
         $comment = $request->comment;
         
+        $evalId = $request->input('faculty') . '-' . $request->input('AY') . '-' . $request->input('semester');
+
+
         // Validate the form data
         $validator = Validator::make($request->all(), [
             'faculty' => 'required',
@@ -37,7 +41,6 @@ class StudentController extends Controller
             'semester' => 'required',
             'college' => 'required',
             'department' => 'required',
-            'program' => 'required',
             'comment' => 'required',
             // Add more validation rules for other input fields if needed
         ]);
@@ -52,45 +55,37 @@ class StudentController extends Controller
         }
 
         // Create an evaluation record
-        $evaluationRecord = Evaluation_Records::create([
+        $evaluationRecord = Pending_Eval::create([
             'student_id' => $user->studentID,
             'faculty_id' => $request->input('faculty'),
             'academic_year' => $request->input('AY'),
             'semester' => $request->input('semester'),
             'college_id' => $request->input('college'),
             'department_id' => $request->input('department'),
-            'program_id' => $request->input('program'),
             'comment' => $request->input('comment'),
+            'A1' => $request->input('A1'),
+            'A2' => $request->input('A2'),
+            'A3' => $request->input('A3'),
+            'A4' => $request->input('A4'),
+            'A5' => $request->input('A5'),
+            'B1' => $request->input('B1'),
+            'B2' => $request->input('B2'),
+            'B3' => $request->input('B3'),
+            'B4' => $request->input('B4'),
+            'B5' => $request->input('B5'),
+            'C1' => $request->input('C1'),
+            'C2' => $request->input('C2'),
+            'C3' => $request->input('C3'),
+            'C4' => $request->input('C4'),
+            'C5' => $request->input('C5'),
+            'D1' => $request->input('D1'),
+            'D2' => $request->input('D2'),
+            'D3' => $request->input('D3'),
+            'D4' => $request->input('D4'),
+            'D5' => $request->input('D5'),
+            'eval_id' => $evalId,
         ]);
-
-        // Loop through the request data to calculate sums for each letter
-        $letterSums = [
-            'A' => 0,
-            'B' => 0,
-            'C' => 0,
-            'D' => 0,
-        ];
-
-        foreach ($request->all() as $name => $value) {
-            // Check if the input name starts with a letter and is followed by a number
-            if (preg_match('/^([A-Z]+)(\d+)$/', $name, $matches)) {
-                $letter = $matches[1];
-                $response = (int)$value; // Convert the response to an integer
-
-                // Update the sum for the letter
-                if (array_key_exists($letter, $letterSums)) {
-                    $letterSums[$letter] += $response;
-                }
-            }
-        }
-
-        // Now, $letterSums contains the sums for each letter (A, B, C, D)
         
-        // Set the sums in the evaluation_record and save it
-        $evaluationRecord->A = $letterSums['A'];
-        $evaluationRecord->B = $letterSums['B'];
-        $evaluationRecord->C = $letterSums['C'];
-        $evaluationRecord->D = $letterSums['D'];
         $evaluationRecord->save();
 
         // Return a JSON response with a status code of '0'
@@ -121,21 +116,7 @@ class StudentController extends Controller
 
         return $options;
     }
-    public function fetchPrograms(Request $request)
-    {
-        $collegeId = $request->input('college_id');
 
-        // Fetch departments based on the selected college ID
-        $programs = Program::where('college_id', $collegeId)->get();
-
-        // Build HTML options for the department select
-        $options = '<option value="">Select a program</option>';
-        foreach ($programs as $program) {
-            $options .= '<option value="' . $program->id . '">' . $program->program_name . '</option>';
-        }
-
-        return $options;
-    }
 
     public function fetchFaculties(Request $request)
     {

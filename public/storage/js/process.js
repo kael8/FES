@@ -14,6 +14,7 @@ $(document).ready(function() {
         var facultyName = $('#facultyName').text();
         var academicYear = $('#academicYear').text();
         var semester = $('#semester').text();
+        var id = $('#id').text();
 
         $.ajax({
             type: "POST",
@@ -22,7 +23,8 @@ $(document).ready(function() {
                 facultyId: facultyId,
                 facultyName: facultyName,
                 academicYear: academicYear,
-                semester: semester
+                semester: semester,
+                id: id
             },
             dataType: "json",
             headers: {
