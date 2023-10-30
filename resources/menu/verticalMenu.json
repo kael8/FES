@@ -317,6 +317,12 @@
       "name": "Evaluate Faculties",
       "icon": "menu-icon fa-solid fa-square-check",
       "slug": "dashboard-analytics"
+    },
+    {
+      "url": "/student/history-list",
+      "name": "History",
+      "icon": "menu-icon fa-solid fa-square-check",
+      "slug": "dashboard-analytics"
     }
   ]
 ,

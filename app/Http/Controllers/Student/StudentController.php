@@ -10,6 +10,7 @@ use App\Models\Faculty;
 use App\Models\Pending_Eval;
 use App\Models\Program;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator; // Import the Validator class
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -140,5 +141,87 @@ class StudentController extends Controller
         $user = Auth::user();
 
         return view('content\student\layouts.sections.navbar.navbar', compact('user'));
+    }
+
+
+    public function historyList()
+    {
+        $user = Auth::user();
+        $studentID = $user->studentID;
+    $itemsPerPage = 5;
+
+    $result = DB::table('pending_eval AS pe')
+        ->select([
+            'pe.id',
+            'pe.faculty_id',
+            'users.name',
+            'department.department_name',
+            DB::raw("CONCAT(pe.semester, ' ', 'AY', ' ', pe.academic_year) AS academic_period"),
+        ])
+        ->join('users', 'users.studentID', '=', 'pe.faculty_id')
+        ->leftJoin('semantic_records AS sr', 'sr.eval_id', '=', 'pe.eval_id')
+        ->join('college', 'college.id', '=', 'pe.college_id')
+        ->leftJoin('department', 'department.id', '=', 'pe.department_id')
+        ->where('pe.student_id', '=', $studentID)
+        ->groupBy('pe.id',
+        'pe.faculty_id',
+        'users.name',
+        'department.department_name', 'academic_period')
+        ->simplePaginate($itemsPerPage);
+
+    return view('content.student.history', compact('result'));
+    }
+
+
+
+    public function viewHistory(Request $request)
+    {
+        $pe = $request->input('pe');
+        $user = Auth::user();
+        $studentID = $user->studentID;
+
+        $result = DB::table('pending_eval AS pe')
+    ->select([
+        'pe.id',
+        'pe.faculty_id',
+        'users.name',
+        'department.department_name',
+        DB::raw("CONCAT(pe.semester, ' ', 'AY', ' ', pe.academic_year) AS academic_period"),
+        'pe.comment',
+        'pe.A1',
+        'pe.A2',
+        'pe.A3',
+        'pe.A4',
+        'pe.A5',
+        'pe.B1',
+        'pe.B2',
+        'pe.B3',
+        'pe.B4',
+        'pe.B5',
+        'pe.C1',
+        'pe.C2',
+        'pe.C3',
+        'pe.C4',
+        'pe.C5',
+        'pe.D1',
+        'pe.D2',
+        'pe.D3',
+        'pe.D4',
+        'pe.D5',
+        DB::raw("SUM(pe.A1 + pe.A2 + pe.A3 + pe.A4 + pe.A5) AS TotalA"),
+        DB::raw("SUM(pe.B1 + pe.B2 + pe.B3 + pe.B4 + pe.B5) AS TotalB"),
+        DB::raw("SUM(pe.C1 + pe.C2 + pe.C3 + pe.C4 + pe.C5) AS TotalC"),
+        DB::raw("SUM(pe.D1 + pe.D2 + pe.D3 + pe.D4 + pe.D5) AS TotalD")
+    ])
+    ->join('users', 'users.studentID', '=', 'pe.faculty_id')
+    ->leftJoin('semantic_records AS sr', 'sr.eval_id', '=', 'pe.eval_id')
+    ->join('college', 'college.id', '=', 'pe.college_id')
+    ->leftJoin('department', 'department.id', '=', 'pe.department_id')
+    ->where('pe.student_id', '=', $studentID)
+    ->where('pe.id', '=', $pe)
+    ->groupBy('pe.id', 'pe.faculty_id', 'users.name', 'department.department_name', 'academic_period', 'pe.comment', 'pe.A1', 'pe.A2', 'pe.A3', 'pe.A4', 'pe.A5', 'pe.B1', 'pe.B2', 'pe.B3', 'pe.B4', 'pe.B5', 'pe.C1', 'pe.C2', 'pe.C3', 'pe.C4', 'pe.C5', 'pe.D1', 'pe.D2', 'pe.D3', 'pe.D4', 'pe.D5')
+    ->first();
+            
+        return view('content.student.view-history', compact('result'));
     }
 }

@@ -32,19 +32,25 @@ class SystemAdminController extends Controller
     }
 
     public function fetchDepartments(Request $request)
-    {
-        $collegeId = $request->input('college_id');
-        // Fetch departments based on the selected college ID
-        $departments = Department::where('college_id', $collegeId)->get();
+{
+    $dep = $request->input('dep');
+    $collegeId = $request->input('college_id');
+    
+    // Fetch departments based on the selected college ID
+    $departments = Department::where('college_id', $collegeId)->get();
 
-        // Build HTML options for the department select
-        $options = '<option value="">Select a department</option>';
-        foreach ($departments as $department) {
-            $options .= '<option value="' . $department->id . '">' . $department->department_name . '</option>';
-        }
+    // Build HTML options for the department select
+    $options = '<option value="" selected>Select a department</option>';
+    foreach ($departments as $department) {
+        // Check if the department's id matches the selected department
+        $isSelected = ($department->id == $dep) ? 'selected' : '';
 
-        return $options;
+        $options .= '<option value="' . $department->id . '" ' . $isSelected . '>' . $department->department_name . '</option>';
     }
+
+    return $options;
+}
+
 
     public function modifylist(Request $request)
     {
@@ -52,27 +58,33 @@ class SystemAdminController extends Controller
         $search = $request->input('search', ''); // Get the search query parameter
 
         $result = DB::table('users')
-            ->select([
-                'users.name',
-                'users.userType',
-                'college.college_name',
-                'department.department_name',
-                'users.studentID',
-                'users.id',
-                'users.email',
-            ])
-            ->join('college', 'college.id', '=', 'users.collegeID')
-            ->join('department', 'department.college_id', '=', 'college.id')
-            ->where(function($query) use ($search) {
-                $query->where('users.name', 'LIKE', '%' . $search . '%')
-                    ->orWhere('users.studentID', 'LIKE', '%' . $search . '%')
-                    ->orWhere('users.email', 'LIKE', '%' . $search . '%')
-                    ->orWhere('college.college_name', 'LIKE', '%' . $search . '%')
-                    ->orWhere('department.department_name', 'LIKE', '%' . $search . '%')
-                    ->orWhere('users.userType', 'LIKE', '%' . $search . '%');
-            })
-            ->orderBy('users.name', 'asc')
-            ->simplePaginate($itemsPerPage);
+    ->select([
+        'users.name',
+        'users.userType',
+        'college.college_name',
+        'department.department_name',
+        'users.studentID',
+        'users.id',
+    ])
+    ->join('college', 'college.id', '=', 'users.collegeID')
+    ->leftJoin('department', 'department.id', '=', 'users.departmentID')
+    ->where(function($query) use ($search) {
+        $query->where('users.name', 'LIKE', '%' . $search . '%')
+            ->orWhere('users.studentID', 'LIKE', '%' . $search . '%')
+            ->orWhere('college.college_name', 'LIKE', '%' . $search . '%')
+            ->orWhere('department.department_name', 'LIKE', '%' . $search . '%')
+            ->orWhere('users.userType', 'LIKE', '%' . $search . '%');
+    })
+    ->orderBy('users.name', 'asc')
+    ->groupBy('users.name',
+    'users.userType',
+    'college.college_name',
+    'department.department_name',
+    'users.studentID',
+    'users.id')
+    ->distinct('users.studentID') // Ensure only unique studentIDs
+    ->simplePaginate($itemsPerPage);
+
 
         return view('content.system-admin.modify_list', compact('result', 'search'));
     }
@@ -97,16 +109,27 @@ class SystemAdminController extends Controller
                 'department.department_name',
                 'users.studentID',
                 'users.id',
-                'users.email',
                 'users.password',
-                'collegeID'
+                'collegeID',
+                'users.departmentID',
+                'users.is_dean'
             ])
             ->join('college', 'college.id', '=', 'users.collegeID')
-            ->join('department', 'department.college_id', '=', 'college.id')
-            ->where('users.studentID', $id) // Assuming $id is the user ID you want to fetch
+            ->leftJoin('department', 'department.id', '=', 'users.departmentID')
+            ->where('users.studentID', '=', $id) // Assuming $id is the user ID you want to fetch
             ->first(); // Use first() to get a single record
+            
+            $dep = DB::table('department')
+            ->select([
+                'department_name',
+                'id'
+            ])
+            ->where('college_id', '=', $result->collegeID)
+            ->get();
 
-        return view('content.system-admin.modify_account', compact('result'));
+
+            return view('content.system-admin.modify_account', compact('result', 'dep'));
+            
     }
 
     public function addPro(Request $request)
@@ -171,18 +194,27 @@ class SystemAdminController extends Controller
         $id = $request->input('id');
         $studentID = $request->input('studentID');
         $name = $request->input('name');
-        $email = $request->input('email');
         $userType = $request->input('userType');
+        $department = $request->input('department');
         $college = $request->input('college');
 
-        // Update the user's information based on the studentID
-        $result = User::where('id', $id)->update([
-            'studentID' => $studentID,
-            'name' => $name, // Update with the new name
-            'email' => $email, // Update with the new email
-            'userType' => $userType, // Update with the new userType
-            'collegeID' => $college, // Update with the new collegeID
-        ]);
+        if($request->has('isDean'))
+        {
+            $department = Null;
+        }
+        
+        $isDean = $request->has('isDean') ? 1 : 0; // Check the checkbox state and set 1 if checked, 0 if unchecked
+
+        $result = User::where('id', $id)
+            ->update([
+                'name' => $name,
+                'studentID' => $studentID,
+                'departmentID' => $department,
+                'userType' => $userType,
+                'collegeID' => $college,
+                'is_dean' => $isDean, // Set the value based on the checkbox state
+            ]);
+
 
         if ($result) {
             // The update was successful
@@ -236,8 +268,6 @@ class SystemAdminController extends Controller
             'facultyID' => $validatedData['facultyID'],
         ]);
     }
-
-    
 
 
 

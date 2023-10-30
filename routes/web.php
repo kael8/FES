@@ -44,6 +44,8 @@ Route::middleware(['userType:Student'])->group(function () use ($controller_path
     Route::get('/fetch-departments', $controller_path . '\Student\StudentController@fetchDepartments');
     Route::get('/fetch-programs', $controller_path . '\Student\StudentController@fetchPrograms');
     Route::get('/fetch-faculties', $controller_path . '\Student\StudentController@fetchFaculties');
+    Route::get('/student/history-list', $controller_path . '\Student\StudentController@historyList');
+    Route::get('/student/view-history', $controller_path . '\Student\StudentController@viewHistory');
 
 });
 

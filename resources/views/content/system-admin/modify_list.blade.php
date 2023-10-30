@@ -40,7 +40,6 @@
           <th>College</th>
           <th>Department</th>
           <th>User Type</th>
-          <th>Email</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -50,9 +49,15 @@
           <th scope="row">{{ $item->studentID }}</th>
           <td>{{ $item->name }}</td>
           <td>{{ $item->college_name }}</td>
-          <td>{{ $item->department_name }}</td>
+          <td>
+    @if(!empty($item->department_name))
+        {{ $item->department_name }}
+    @else
+        Dean
+    @endif
+</td>
+
           <td>{{ $item->userType }}</td>
-          <td>{{ $item->email }}</td>
           <td>
             <a href="{{ url('/system-admin/modify-account') }}?id={{ $item->studentID }}" class="btn btn-primary btn-sm">Modify</a>
             <button class="btn btn-danger btn-sm delete-button" data-student-id="{{ $item->studentID }}" data-user-name="{{ $item->name }}">Remove</button>
